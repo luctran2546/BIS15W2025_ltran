@@ -73,7 +73,9 @@ max(homerange$mean.mass.g)
 
 ```{r}
 homerange$taxon <- as.factor(homerange$taxon)
+levels(homerange$taxon)
 homerange$order <- as.factor(homerange$order)
+levels(homerange$order)
 ```
 
 **8. Use `select` to pull out the variables taxon and common.name.**
