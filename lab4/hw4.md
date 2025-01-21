@@ -120,7 +120,7 @@ endangered <- filter(msleep, conservation == "en")
 **6. The variable `vore` categorizes the feeding strategy of the mammals in the data. How many mammals are in each category of `vore`?**
 
 ``` r
-msleep %>% count(vore)
+count(msleep, vore)
 ```
 
 ```
