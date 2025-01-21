@@ -471,15 +471,10 @@ mammals. Store this as a new object called
 <p><strong>6. The variable <code>vore</code> categorizes the feeding
 strategy of the mammals in the data. How many mammals are in each
 category of <code>vore</code>?</strong></p>
-<pre class="r"><code>count(msleep, vore)</code></pre>
-<pre><code>## # A tibble: 5 × 2
-##   vore        n
-##   &lt;chr&gt;   &lt;int&gt;
-## 1 carni      19
-## 2 herbi      32
-## 3 insecti     5
-## 4 omni       20
-## 5 &lt;NA&gt;        7</code></pre>
+<pre class="r"><code>table(msleep$vore)</code></pre>
+<pre><code>## 
+##   carni   herbi insecti    omni 
+##      19      32       5      20</code></pre>
 <p><strong>7. Use <code>filter</code> to find the insectivore(s) with
 endangered status.</strong></p>
 <pre class="r"><code>filter(endangered, vore == &quot;insecti&quot;)</code></pre>

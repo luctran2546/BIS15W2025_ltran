@@ -120,18 +120,13 @@ endangered <- filter(msleep, conservation == "en")
 **6. The variable `vore` categorizes the feeding strategy of the mammals in the data. How many mammals are in each category of `vore`?**
 
 ``` r
-count(msleep, vore)
+table(msleep$vore)
 ```
 
 ```
-## # A tibble: 5 × 2
-##   vore        n
-##   <chr>   <int>
-## 1 carni      19
-## 2 herbi      32
-## 3 insecti     5
-## 4 omni       20
-## 5 <NA>        7
+## 
+##   carni   herbi insecti    omni 
+##      19      32       5      20
 ```
 
 **7. Use `filter` to find the insectivore(s) with endangered status.**
