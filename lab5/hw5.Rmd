@@ -1,6 +1,6 @@
 ---
 title: "Homework 5"
-author: "Type Your Name Here"
+author: "Luc-Tanton Tran"
 date: "`r Sys.Date()`"
 output:
   html_document: 
@@ -24,22 +24,23 @@ Reference: Koerner SE, Poulsen JR, Blanchard EJ, Okouyi J, Clark CJ. Vertebrate 
 
 **1. Load `IvindoData_DryadVersion.csv` and store it as a new object called `gabon`.**
 ```{r}
-
+gabon <- read.csv("data/IvindoData_DryadVersion.csv")
 ```
 
 **2. Use one or more of the summary functions you have learned to get an idea of the structure of the data.**  
 ```{r}
-
+glimpse(gabon)
 ```
   
 **3. Use `mutate()` Change the variables `HuntCat`, `LandUse`, and `TransectID` to factors.**
 ```{r}
-
+gabon1 <- gabon |> 
+  mutate(HuntCat = as.factor(HuntCat), LandUse = as.factor(LandUse), TransectID = as.factor(TransectID))
 ```
 
 **4. Use `filter` to make three new dataframes focused only on 1. national parks, 2. logging concessions, and 3. neither. Have a look at the README in the data folder so you understand the variables.**
 ```{r}
-
+national_parks <- 
 ```
 
 **5. How many transects are recorded for each land use type?**
