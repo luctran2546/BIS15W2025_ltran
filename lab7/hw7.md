@@ -411,6 +411,7 @@ sharks %>%
 
 ``` r
 sharks %>% 
+  filter(catch>0 | catch != "NA") |> 
   mutate(fishing_pressure = ifelse(catch > 75, "high", "moderate")) %>% 
   group_by(fishing_pressure) %>% 
   summarize(
@@ -420,12 +421,11 @@ sharks %>%
 ```
 
 ```
-## # A tibble: 3 × 3
+## # A tibble: 2 × 3
 ##   fishing_pressure average_catch     n
 ##   <chr>                    <dbl> <int>
 ## 1 high                      86.6   779
 ## 2 moderate                  14.3 13672
-## 3 <NA>                      NA    8759
 ```
 
 12. Perform one analysis of your choice on the fisheries dataframe that includes a minimum of three lines of code and two functions. Write a sentence or two that explains the intent of your code.

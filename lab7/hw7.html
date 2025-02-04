@@ -721,18 +721,18 @@ fishing pressure is considered “high”, otherwise it is considered
 moderate fishing pressure?</li>
 </ol>
 <pre class="r"><code>sharks %&gt;% 
+  filter(catch&gt;0 | catch != &quot;NA&quot;) |&gt; 
   mutate(fishing_pressure = ifelse(catch &gt; 75, &quot;high&quot;, &quot;moderate&quot;)) %&gt;% 
   group_by(fishing_pressure) %&gt;% 
   summarize(
     average_catch = mean(catch),
     n= n()
   )</code></pre>
-<pre><code>## # A tibble: 3 × 3
+<pre><code>## # A tibble: 2 × 3
 ##   fishing_pressure average_catch     n
 ##   &lt;chr&gt;                    &lt;dbl&gt; &lt;int&gt;
 ## 1 high                      86.6   779
-## 2 moderate                  14.3 13672
-## 3 &lt;NA&gt;                      NA    8759</code></pre>
+## 2 moderate                  14.3 13672</code></pre>
 <ol start="12" style="list-style-type: decimal">
 <li>Perform one analysis of your choice on the fisheries dataframe that
 includes a minimum of three lines of code and two functions. Write a

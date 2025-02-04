@@ -124,6 +124,7 @@ sharks %>%
 11. For sharks, how does the average catch differ between high and moderate fishing pressure?
 ```{r}
 sharks %>% 
+  filter(catch>0 | catch != "NA") |> 
   mutate(fishing_pressure = ifelse(catch > 75, "high", "moderate")) %>% 
   group_by(fishing_pressure) %>% 
   summarize(
