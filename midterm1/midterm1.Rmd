@@ -129,7 +129,8 @@ ecosphere %>%
 Problem 10. (4 points). Make a new column `conservation_status` that labels species with a population size less than 300,000 as "threatened" and species with a population size greater than 300,000 as "stable". Make sure your results are sorted in descending order. How many species are threatened vs. stable? Based on the results, do you see a problem with this analysis?  
 ```{r}
 ecosphere %>% 
-  mutate(conservation_status = ifelse(population_size > 300000, "stable", "threatened")) %>% 
+  mutate(
+    conservation_status = ifelse(population_size > 300000, "stable", "threatened")) %>% 
   arrange(desc(population_size))
 #Problem: about half of the species listed don't have a population 
 # size ("NA"), and are unable to be categorized as either "stable" or "threatened".
@@ -151,8 +152,8 @@ ecosphere %>%
   group_by(habitat) %>% 
   summarize(
     max_mean_age_at_sexual_maturity = max(mean_age_at_sexual_maturity, na.rm=T),
-    n = n(),
-  )
+    n = n(),) %>% 
+  arrange(-max_mean_age_at_sexual_maturity)
 ```
 
 

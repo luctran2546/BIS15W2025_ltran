@@ -576,7 +576,8 @@ size greater than 300,000 as “stable”. Make sure your results are sorted
 in descending order. How many species are threatened vs. stable? Based
 on the results, do you see a problem with this analysis?</p>
 <pre class="r"><code>ecosphere %&gt;% 
-  mutate(conservation_status = ifelse(population_size &gt; 300000, &quot;stable&quot;, &quot;threatened&quot;)) %&gt;% 
+  mutate(
+    conservation_status = ifelse(population_size &gt; 300000, &quot;stable&quot;, &quot;threatened&quot;)) %&gt;% 
   arrange(desc(population_size))</code></pre>
 <pre><code>## # A tibble: 551 × 23
 ##    order        family common_name scientific_name diet  life_expectancy habitat
@@ -617,16 +618,16 @@ ecosphere %&gt;%
   group_by(habitat) %&gt;% 
   summarize(
     max_mean_age_at_sexual_maturity = max(mean_age_at_sexual_maturity, na.rm=T),
-    n = n(),
-  )</code></pre>
+    n = n(),) %&gt;% 
+  arrange(-max_mean_age_at_sexual_maturity)</code></pre>
 <pre><code>## # A tibble: 7 × 3
 ##   habitat   max_mean_age_at_sexual_maturity     n
 ##   &lt;chr&gt;                               &lt;dbl&gt; &lt;int&gt;
-## 1 Grassland                             2      25
-## 2 Ocean                                 4       4
+## 1 Ocean                                 4       4
+## 2 Wetland                               3      48
 ## 3 Shrubland                             2.5    61
-## 4 Various                               2      21
-## 5 Wetland                               3      48
+## 4 Grassland                             2      25
+## 5 Various                               2      21
 ## 6 Woodland                              2     101
 ## 7 &lt;NA&gt;                                  1       5</code></pre>
 </div>
