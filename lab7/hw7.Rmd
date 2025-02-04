@@ -70,21 +70,23 @@ fisheries %>%
 
 5. Based on the `asfis_species_name`, what are the top 5 most caught species? (note: "Osteichthyes" is not a species, it refers to unidentified fish. You should filter this one out.).
 ```{r}
-fisheries %>% 
-  select(country, common_name, asfis_species_name, catch) %>% 
-  filter(asfis_species_name != "Osteichthyes") %>% 
-  group_by(asfis_species_name) %>% 
-  summarize(
-    total_times_caught = n()) %>% 
-  arrange(-total_times_caught)
+fisheries |> 
+  filter(asfis_species_name != "Osteichthyes") |> 
+  group_by(asfis_species_number, asfis_species_name) |> 
+  summarize(total_catches = sum(catch, na.rm = TRUE), .groups = 'keep') |> 
+  arrange(-total_catches)
 ```
 
 6. For the species that was caught the most, which country had the highest catch?
 ```{r}
 fisheries %>% 
   select(country, common_name, asfis_species_name, catch) %>% 
-  filter(asfis_species_name == "Thunnus albacares") %>% 
-  arrange(-catch)
+  filter(asfis_species_name == "Engraulis ringens") %>% 
+  group_by(country) |> 
+  summarize(
+    total_catch = sum(catch, na.rm= TRUE)
+  ) |> 
+  arrange(-total_catch)
 ```
 
 7. Which country had the largest overall catch between the years 2002-2012?
@@ -101,7 +103,6 @@ fisheries %>%
 ```{r}
 fisheries %>% 
   select(country, year, catch) %>% 
-  filter(between(year, 2002, 2012)) %>%
     group_by(country, year) %>% 
     summarize(overall_catch = sum(catch, na.rm=TRUE), .groups='keep') %>% 
   arrange(-overall_catch)
@@ -131,7 +132,7 @@ sharks %>%
   )
 ```
 
-12. Perform one analysis of your choice on the fisheries dataframe that includes a minimum of three lines of code and two functions. Write a seentence or two that explains the intent of your code.
+12. Perform one analysis of your choice on the fisheries dataframe that includes a minimum of three lines of code and two functions. Write a sentence or two that explains the intent of your code.
 ```{r}
 fisheries %>% 
   select(country, asfis_species_name, catch) %>% #select variables of interest

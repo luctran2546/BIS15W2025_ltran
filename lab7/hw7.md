@@ -1,7 +1,7 @@
 ---
 title: "Homework 7"
 author: "Luc-Tanton Tran"
-date: "2025-01-30"
+date: "2025-02-03"
 output:
   html_document: 
     theme: spacelab
@@ -248,30 +248,29 @@ fisheries %>%
 5. Based on the `asfis_species_name`, what are the top 5 most caught species? (note: "Osteichthyes" is not a species, it refers to unidentified fish. You should filter this one out.).
 
 ``` r
-fisheries %>% 
-  select(country, common_name, asfis_species_name, catch) %>% 
-  filter(asfis_species_name != "Osteichthyes") %>% 
-  group_by(asfis_species_name) %>% 
-  summarize(
-    total_times_caught = n()) %>% 
-  arrange(-total_times_caught)
+fisheries |> 
+  filter(asfis_species_name != "Osteichthyes") |> 
+  group_by(asfis_species_number, asfis_species_name) |> 
+  summarize(total_catches = sum(catch, na.rm = TRUE), .groups = 'keep') |> 
+  arrange(-total_catches)
 ```
 
 ```
-## # A tibble: 1,545 × 2
-##    asfis_species_name total_times_caught
-##    <chr>                           <int>
-##  1 Thunnus albacares                6866
-##  2 Elasmobranchii                   6405
-##  3 Katsuwonus pelamis               5785
-##  4 Thunnus obesus                   5341
-##  5 Xiphias gladius                  5143
-##  6 Thunnus alalunga                 4441
-##  7 Mugilidae                        4141
-##  8 Rajiformes                       3706
-##  9 Mollusca                         3516
-## 10 Scombroidei                      3457
-## # ℹ 1,535 more rows
+## # A tibble: 1,547 × 3
+## # Groups:   asfis_species_number, asfis_species_name [1,547]
+##    asfis_species_number asfis_species_name      total_catches
+##    <chr>                <chr>                           <dbl>
+##  1 1210600208           Engraulis ringens              540739
+##  2 1480401601           Theragra chalcogramma          473722
+##  3 1210500105           Clupea harengus                264304
+##  4 1480400202           Gadus morhua                   217930
+##  5 1750102501           Katsuwonus pelamis             194923
+##  6 1210501303           Sardinops sagax                176094
+##  7 1750100201           Scomber japonicus              175444
+##  8 1702300405           Trachurus murphyi              152034
+##  9 1210501301           Sardinops melanostictus        144774
+## 10 1230400201           Mallotus villosus              131239
+## # ℹ 1,537 more rows
 ```
 
 6. For the species that was caught the most, which country had the highest catch?
@@ -279,25 +278,21 @@ fisheries %>%
 ``` r
 fisheries %>% 
   select(country, common_name, asfis_species_name, catch) %>% 
-  filter(asfis_species_name == "Thunnus albacares") %>% 
-  arrange(-catch)
+  filter(asfis_species_name == "Engraulis ringens") %>% 
+  group_by(country) |> 
+  summarize(
+    total_catch = sum(catch, na.rm= TRUE)
+  ) |> 
+  arrange(-total_catch)
 ```
 
 ```
-## # A tibble: 6,866 × 4
-##    country                  common_name    asfis_species_name catch
-##    <chr>                    <chr>          <chr>              <dbl>
-##  1 Mexico                   Yellowfin tuna Thunnus albacares    966
-##  2 United States of America Yellowfin tuna Thunnus albacares    930
-##  3 United States of America Yellowfin tuna Thunnus albacares    883
-##  4 Mexico                   Yellowfin tuna Thunnus albacares    854
-##  5 Mexico                   Yellowfin tuna Thunnus albacares    778
-##  6 United States of America Yellowfin tuna Thunnus albacares    736
-##  7 Indonesia                Yellowfin tuna Thunnus albacares    705
-##  8 Philippines              Yellowfin tuna Thunnus albacares    705
-##  9 United States of America Yellowfin tuna Thunnus albacares    700
-## 10 Mexico                   Yellowfin tuna Thunnus albacares    606
-## # ℹ 6,856 more rows
+## # A tibble: 3 × 2
+##   country total_catch
+##   <chr>         <dbl>
+## 1 Peru         439717
+## 2 Chile        100694
+## 3 Ecuador         328
 ```
 
 7. Which country had the largest overall catch between the years 2002-2012?
@@ -333,28 +328,27 @@ fisheries %>%
 ``` r
 fisheries %>% 
   select(country, year, catch) %>% 
-  filter(between(year, 2002, 2012)) %>%
     group_by(country, year) %>% 
     summarize(overall_catch = sum(catch, na.rm=TRUE), .groups='keep') %>% 
   arrange(-overall_catch)
 ```
 
 ```
-## # A tibble: 2,133 × 3
-## # Groups:   country, year [2,133]
+## # A tibble: 11,583 × 3
+## # Groups:   country, year [11,583]
 ##    country  year overall_catch
 ##    <chr>   <dbl>         <dbl>
-##  1 China    2002         28967
-##  2 China    2010         27851
-##  3 China    2003         26889
-##  4 China    2007         24964
-##  5 China    2004         24420
-##  6 China    2006         24359
-##  7 China    2011         23831
-##  8 China    2005         22632
-##  9 China    2012         22316
-## 10 China    2008         22015
-## # ℹ 2,123 more rows
+##  1 Peru     1970         77000
+##  2 Peru     1971         76800
+##  3 Peru     1968         62700
+##  4 China    2001         39327
+##  5 Japan    1972         30167
+##  6 Japan    1988         29701
+##  7 China    2002         28967
+##  8 China    2010         27851
+##  9 Japan    1976         27825
+## 10 China    1998         27593
+## # ℹ 11,573 more rows
 ```
 
 9. Fishing practices for sharks, rays, chimaeras and other cartilaginous fish (group 38) are of particular concern due to their conservation status. Make a new dataframe `sharks` that only contains data on this group. 
@@ -434,7 +428,7 @@ sharks %>%
 ## 3 <NA>                      NA    8759
 ```
 
-12. Perform one analysis of your choice on the fisheries dataframe that includes a minimum of three lines of code and two functions. Write a seentence or two that explains the intent of your code.
+12. Perform one analysis of your choice on the fisheries dataframe that includes a minimum of three lines of code and two functions. Write a sentence or two that explains the intent of your code.
 
 ``` r
 fisheries %>% 

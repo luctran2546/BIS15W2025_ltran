@@ -11,7 +11,7 @@
 
 <meta name="author" content="Luc-Tanton Tran" />
 
-<meta name="date" content="2025-01-30" />
+<meta name="date" content="2025-02-03" />
 
 <title>Homework 7</title>
 
@@ -376,7 +376,7 @@ display: none;
 
 <h1 class="title toc-ignore">Homework 7</h1>
 <h4 class="author">Luc-Tanton Tran</h4>
-<h4 class="date">2025-01-30</h4>
+<h4 class="date">2025-02-03</h4>
 
 </div>
 
@@ -577,49 +577,44 @@ fish species were caught?</li>
 most caught species? (note: “Osteichthyes” is not a species, it refers
 to unidentified fish. You should filter this one out.).</li>
 </ol>
-<pre class="r"><code>fisheries %&gt;% 
-  select(country, common_name, asfis_species_name, catch) %&gt;% 
-  filter(asfis_species_name != &quot;Osteichthyes&quot;) %&gt;% 
-  group_by(asfis_species_name) %&gt;% 
-  summarize(
-    total_times_caught = n()) %&gt;% 
-  arrange(-total_times_caught)</code></pre>
-<pre><code>## # A tibble: 1,545 × 2
-##    asfis_species_name total_times_caught
-##    &lt;chr&gt;                           &lt;int&gt;
-##  1 Thunnus albacares                6866
-##  2 Elasmobranchii                   6405
-##  3 Katsuwonus pelamis               5785
-##  4 Thunnus obesus                   5341
-##  5 Xiphias gladius                  5143
-##  6 Thunnus alalunga                 4441
-##  7 Mugilidae                        4141
-##  8 Rajiformes                       3706
-##  9 Mollusca                         3516
-## 10 Scombroidei                      3457
-## # ℹ 1,535 more rows</code></pre>
+<pre class="r"><code>fisheries |&gt; 
+  filter(asfis_species_name != &quot;Osteichthyes&quot;) |&gt; 
+  group_by(asfis_species_number, asfis_species_name) |&gt; 
+  summarize(total_catches = sum(catch, na.rm = TRUE), .groups = &#39;keep&#39;) |&gt; 
+  arrange(-total_catches)</code></pre>
+<pre><code>## # A tibble: 1,547 × 3
+## # Groups:   asfis_species_number, asfis_species_name [1,547]
+##    asfis_species_number asfis_species_name      total_catches
+##    &lt;chr&gt;                &lt;chr&gt;                           &lt;dbl&gt;
+##  1 1210600208           Engraulis ringens              540739
+##  2 1480401601           Theragra chalcogramma          473722
+##  3 1210500105           Clupea harengus                264304
+##  4 1480400202           Gadus morhua                   217930
+##  5 1750102501           Katsuwonus pelamis             194923
+##  6 1210501303           Sardinops sagax                176094
+##  7 1750100201           Scomber japonicus              175444
+##  8 1702300405           Trachurus murphyi              152034
+##  9 1210501301           Sardinops melanostictus        144774
+## 10 1230400201           Mallotus villosus              131239
+## # ℹ 1,537 more rows</code></pre>
 <ol start="6" style="list-style-type: decimal">
 <li>For the species that was caught the most, which country had the
 highest catch?</li>
 </ol>
 <pre class="r"><code>fisheries %&gt;% 
   select(country, common_name, asfis_species_name, catch) %&gt;% 
-  filter(asfis_species_name == &quot;Thunnus albacares&quot;) %&gt;% 
-  arrange(-catch)</code></pre>
-<pre><code>## # A tibble: 6,866 × 4
-##    country                  common_name    asfis_species_name catch
-##    &lt;chr&gt;                    &lt;chr&gt;          &lt;chr&gt;              &lt;dbl&gt;
-##  1 Mexico                   Yellowfin tuna Thunnus albacares    966
-##  2 United States of America Yellowfin tuna Thunnus albacares    930
-##  3 United States of America Yellowfin tuna Thunnus albacares    883
-##  4 Mexico                   Yellowfin tuna Thunnus albacares    854
-##  5 Mexico                   Yellowfin tuna Thunnus albacares    778
-##  6 United States of America Yellowfin tuna Thunnus albacares    736
-##  7 Indonesia                Yellowfin tuna Thunnus albacares    705
-##  8 Philippines              Yellowfin tuna Thunnus albacares    705
-##  9 United States of America Yellowfin tuna Thunnus albacares    700
-## 10 Mexico                   Yellowfin tuna Thunnus albacares    606
-## # ℹ 6,856 more rows</code></pre>
+  filter(asfis_species_name == &quot;Engraulis ringens&quot;) %&gt;% 
+  group_by(country) |&gt; 
+  summarize(
+    total_catch = sum(catch, na.rm= TRUE)
+  ) |&gt; 
+  arrange(-total_catch)</code></pre>
+<pre><code>## # A tibble: 3 × 2
+##   country total_catch
+##   &lt;chr&gt;         &lt;dbl&gt;
+## 1 Peru         439717
+## 2 Chile        100694
+## 3 Ecuador         328</code></pre>
 <ol start="7" style="list-style-type: decimal">
 <li>Which country had the largest overall catch between the years
 2002-2012?</li>
@@ -650,25 +645,24 @@ it?</li>
 </ol>
 <pre class="r"><code>fisheries %&gt;% 
   select(country, year, catch) %&gt;% 
-  filter(between(year, 2002, 2012)) %&gt;%
     group_by(country, year) %&gt;% 
     summarize(overall_catch = sum(catch, na.rm=TRUE), .groups=&#39;keep&#39;) %&gt;% 
   arrange(-overall_catch)</code></pre>
-<pre><code>## # A tibble: 2,133 × 3
-## # Groups:   country, year [2,133]
+<pre><code>## # A tibble: 11,583 × 3
+## # Groups:   country, year [11,583]
 ##    country  year overall_catch
 ##    &lt;chr&gt;   &lt;dbl&gt;         &lt;dbl&gt;
-##  1 China    2002         28967
-##  2 China    2010         27851
-##  3 China    2003         26889
-##  4 China    2007         24964
-##  5 China    2004         24420
-##  6 China    2006         24359
-##  7 China    2011         23831
-##  8 China    2005         22632
-##  9 China    2012         22316
-## 10 China    2008         22015
-## # ℹ 2,123 more rows</code></pre>
+##  1 Peru     1970         77000
+##  2 Peru     1971         76800
+##  3 Peru     1968         62700
+##  4 China    2001         39327
+##  5 Japan    1972         30167
+##  6 Japan    1988         29701
+##  7 China    2002         28967
+##  8 China    2010         27851
+##  9 Japan    1976         27825
+## 10 China    1998         27593
+## # ℹ 11,573 more rows</code></pre>
 <ol start="9" style="list-style-type: decimal">
 <li>Fishing practices for sharks, rays, chimaeras and other
 cartilaginous fish (group 38) are of particular concern due to their
@@ -742,7 +736,7 @@ moderate fishing pressure?</li>
 <ol start="12" style="list-style-type: decimal">
 <li>Perform one analysis of your choice on the fisheries dataframe that
 includes a minimum of three lines of code and two functions. Write a
-seentence or two that explains the intent of your code.</li>
+sentence or two that explains the intent of your code.</li>
 </ol>
 <pre class="r"><code>fisheries %&gt;% 
   select(country, asfis_species_name, catch) %&gt;% #select variables of interest
