@@ -96,7 +96,6 @@ amphibio %>%
 **10. Now that we know how NA's are represented in the `amniota` data, how would you load the data such that the values which represent NA's are automatically converted?**
 ```{r}
 amniota <- read.csv("data/amniota.csv", na = "-999")
-amniota
 ```
 
 **11. Please complete the class project survey at: [BIS 15L Group Project](https://forms.gle/H2j69Z3ZtbLH3efW6)**
