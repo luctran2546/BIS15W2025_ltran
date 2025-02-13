@@ -29,10 +29,10 @@ For this homework, we will use a data set compiled by the Office of Environment 
 This homework loosely follows the tutorial of [R Ladies Sydney](https://rladiessydney.org/). If you get stuck, check it out!  
 
 1. Start by loading the data `sydneybeaches`. Do some exploratory analysis to get an idea of the data structure.
-```{r}
+```{r, results='hide'}
 beaches <- read.csv("data/sydneybeaches.csv") %>% clean_names()
 glimpse(beaches)
-beaches
+beaches #output hidden because it's far too long
 ```
 
 2. Are these data "tidy" per the definitions of the tidyverse? How do you know? Are they in wide or long format?
@@ -65,7 +65,7 @@ sydneybeaches_wide %>%
     -site,
     names_to = "date",
     values_to = "enterococci_cfu_100ml"
-  )
+  ) 
 ```
 
 6. We haven't dealt much with dates yet, but separate the date into columns day, month, and year. Do this on the `sydneybeaches_long` data.
@@ -101,7 +101,8 @@ sydneybeaches_long %>%
 sydneybeaches_long %>% 
   group_by(site, year) %>% 
   summarize(
-    avg_enterococci_cfu_100ml = mean(enterococci_cfu_100ml, na.rm = T)
+    avg_enterococci_cfu_100ml = mean(enterococci_cfu_100ml, na.rm = T),
+    .groups = 'keep'
   ) %>% 
   filter(year == "2013") %>% 
   arrange(desc(avg_enterococci_cfu_100ml))
@@ -109,7 +110,14 @@ sydneybeaches_long %>%
 
 10. Explore the data! Do one analysis of your choice that includes a minimum of three lines of code.  
 ```{r}
+#Finding the top ten LEAST polluted beaches in 2017
 
+sydneybeaches_long |> 
+  filter(year == "2017") |> 
+  group_by(site) |> 
+  summarize(avg_pollution = mean(enterococci_cfu_100ml)) |> 
+  top_n(-10, avg_pollution) |> 
+  arrange(avg_pollution)
 ```
 
 ## Push your final code to GitHub!
