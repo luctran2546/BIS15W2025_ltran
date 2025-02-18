@@ -30,10 +30,32 @@ sharks <- read_csv("data/SharkIncidents_1950_2022_220302.csv") %>% clean_names()
 
 ## Questions
 1. Start by doing some data exploration using your preferred function(s). What is the structure of the data? Where are the missing values and how are they represented?  
+```{r}
+glimpse(sharks)
+```
 
 2. Notice that there are some incidents identified as "NOT COUNTED". These should be removed from the data because they were either not sharks, unverified, or were provoked. It's OK to replace the `sharks` object.
+```{r}
+sharks_without_not_counted <- sharks %>% 
+  filter(incident_num != "NOT COUNTED")
+```
 
 3. Are there any "hotspots" for shark incidents in California? Make a table and plot that shows the total number of incidents per county. Which county has the highest number of incidents?
+```{r}
+sharks_without_not_counted %>% 
+  group_by(county) %>% 
+  summarize(n_incidents = n()) %>% 
+  arrange(-n_incidents)
+```
+
+```{r}
+sharks_without_not_counted %>% 
+  ggplot(aes(x=county))+
+  geom_bar()+
+  coord_flip()+
+  labs(title= "Incidents by County")
+```
+
 
 4. Are there months of the year when incidents are more likely to occur? Make a table and a plot that shows the total number of incidents by month. Which month has the highest number of incidents?  
 
