@@ -50,17 +50,27 @@ homerange <- read_csv("data/Tamburelloetal_HomeRangeDatabase.csv", na = c("", "N
 ## Review
 1. Use the `homerange` data to make a plot that shows the range of `log10.mass` by taxonomic class.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x= class, y = log10.mass))+
+  geom_boxplot()+
+  labs(title = "log10.mass vs Class")
 ```
 
 2. Now, add a layer to this plot that fills color for each box by taxonomic class.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x= class, y = log10.mass, fill = class))+
+  geom_boxplot()+
+  labs(title = "log10.mass vs Class")
 ```
 
-3. Use `fill` to show the range of `log10.mass` by taxonomic class with color codes.
+3. Use `fill` to show the range of `log10.mass` by taxon with color codes.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x= class, y = log10.mass, fill = taxon))+
+  geom_boxplot()+
+  labs(title = "log10.mass vs Class Grouped by Taxon")#+
+  #theme(plot.title = element_text(hjust=0.5))
 ```
 
 ## Line plots
@@ -68,12 +78,30 @@ Line plots are great when you need to show changes over time. Here we look at th
 
 Start by making a clear x and y so we know what we are going to plot.
 ```{r}
-
+deserts %>% 
+  filter(species_id=="DM" | species_id=="DS") %>% 
+  mutate(year=as.factor(year)) %>% 
+  group_by(year, species_id) %>% 
+  summarize(n=n(), .groups='keep') %>% 
+  pivot_wider(
+    names_from = species_id,
+    values_from = n
+  )
 ```
 
 Now let's make the plot.  
 ```{r}
-
+deserts %>% 
+  filter(species_id == "DM"| species_id == "DS") %>% 
+  mutate(year = as.factor(year)) %>% 
+  group_by(year,species_id) %>% 
+  summarize(n = n(), .groups='keep') %>% 
+  ggplot(aes(x=year, y = n, group = species_id, color = species_id))+
+  geom_line()+
+  geom_point()+
+  theme(axis.text.x=element_text(angle=60,hjust=1))+
+  labs(title = "Number of Individuals by Year, by Species")+
+  theme(plot.title = element_text(hjust=0.5))
 ```
 
 ## Histograms
@@ -81,23 +109,30 @@ Histograms show the distribution of continuous variables. As students, you have 
 
 What does the distribution of body mass look like in the `homerange` data?
 ```{r}
-
+homerange %>% 
+  ggplot(aes(log10.mass))+
+  geom_histogram(bins=60)
 ```
 
 Let's play with the colors. This shows all 657 of R's built-in colors. Notice that `color` and `fill` do different things!
 ```{r}
-#colors()
+#colors() # so many colors!
 ```
 
 Let's rebuild the histogram, but this time we will specify the color and fill. Do a little experimentation on your own with the different colors.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(log10.mass))+
+  geom_histogram(color="black", fill="wheat2")
 ```
 
 ## Density plots  
 Density plots are similar to histograms but they use a smoothing function to make the distribution more even and clean looking. They do not use bins.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(log10.mass))+
+  geom_density(color="salmon", fill="mistyrose", alpha=0.4)+
+  labs(title = "Distribution of Body Mass")
 ```
 
 I like to see both the histogram and the density curve so I often plot them together. Note that I assign the density plot a different color.
@@ -112,17 +147,27 @@ homerange %>%
 ## Practice
 1. Make a histogram of `log10.hra`. Make sure to add a title.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(log10.hra))+
+  geom_histogram(fill="wheat2", color = "plum")+
+  labs(title = "Histogram of log10.hra")
 ```
 
 2. Now plot the same variable using `geom_density()`.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(log10.hra))+
+  geom_density(fill="wheat2", color = "plum", alpha=0.4)+
+  labs(title = "Density Plot of log10.hra")
 ```
 
 3. Combine them both!
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x=log10.hra)) +
+  geom_histogram(aes(y = after_stat(density)), fill = "deepskyblue4", alpha = 0.4, color = "black")+
+  geom_density(color = "red")+
+  labs(title = "Distribution of log10(hra)")
 ```
 
 ## Create Categories with mutate and case_when()
@@ -132,27 +177,40 @@ homerange %>%
 ```
 
 ```{r}
-
+summary(homerange$log10.mass)
 ```
 
 Use gtools to find the quartiles.
 ```{r}
-
+library(gtools)
+quartiles <- quantcut(homerange$log10.mass)
+table(quartiles)
 ```
 
 ```{r}
-
+homerange <- homerange %>% 
+  mutate(mass_category=case_when(log10.mass<=1.7 ~ "small",
+                                 log10.mass>1.7&log10.mass<3.33 ~ "medium",
+                                 log10.mass>3.33 ~ "large"))
 ```
 
 Here we check how the newly created body mass categories compare across `trophic.guild`. 
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x=mass_category, fill = trophic.guild))+
+  geom_bar(pos='dodge')
 ```
 
 ## Practice
 1. Use case_when() to make a new column `range_category` that breaks down `log10.hra` into very small, small, medium, and large classes based on quartile.
 ```{r}
-
+quartiles_1 <- quantcut(homerange$log10.hra)
+table(quartiles_1)
+homerange <- homerange %>% 
+  mutate(range_category = case_when(log10.hra <=3.65 ~ "very small",
+                                    log10.hra > 3.65 & log10.hra <= 4.59 ~ "small",
+                                    log10.hra > 4.59 & log10.hra <= 6.02 ~ "medium",
+                                    log10.hra > 6.02 ~ "large"))
 ```
 
 ```{r}
@@ -161,12 +219,22 @@ Here we check how the newly created body mass categories compare across `trophic
 
 2. Make a plot that shows how many and which taxonomic classes are represented in each `range_category`.   
 ```{r}
-
+homerange %>% 
+  ggplot(aes(range_category, fill = class))+
+  geom_bar(pos='dodge', color = "black", alpha = 0.6)+
+  labs(title = "Number of Species Group by Homerange Size and Class")+
+  theme(plot.title = element_text(hjust=0.5))
 ```
 
 3. Isolate the small `range_category` and plot the range of `log10.mass` by taxonomic class.
 ```{r}
-
+homerange %>% 
+  filter(range_category == "small") %>% 
+  group_by(class) %>% 
+  ggplot(aes(x=range_category, y = log10.mass, fill = class)) +
+  geom_boxplot()+
+  labs(title = "Small Homerange Species Range Grouped by Class")+
+  theme(plot.title = element_text(size=rel(1.5),hjust=0.5))
 ```
 
 ## That's it! Let's take a break!  
