@@ -67,6 +67,7 @@ sharks_without_not_counted %>%
 **October has the highest incidents according to this dataset.**
 ```{r}
 sharks_without_not_counted %>% 
+  mutate(month = as.factor(month)) %>% 
   group_by(month) %>% 
   summarize(
     total_incidents_by_month = n()
@@ -74,6 +75,7 @@ sharks_without_not_counted %>%
   arrange(-total_incidents_by_month)
 
 sharks_without_not_counted %>% 
+  mutate(month = as.factor(month)) %>% 
   ggplot(aes(x=month))+
   geom_bar()+
   labs(title = "Number of Incidents by Month",
@@ -88,8 +90,11 @@ sharks_without_not_counted %>%
   group_by(county, injury) %>% 
   summarize(
     number_incidents = n(),
+    .groups = "keep"
   ) %>% 
-  arrange(-number_incidents)
+  pivot_wider(names_from = injury,values_from = number_incidents) %>% 
+  mutate(total = sum(c(none, minor, major, fatal), na.rm=T)) %>% 
+  arrange(-total)
 ```
 
 6. Use the table from #5 to make a plot that shows the total number of incidents by county.
