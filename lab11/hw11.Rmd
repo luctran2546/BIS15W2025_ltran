@@ -85,10 +85,9 @@ sharks_without_not_counted %>%
 **San Diego has the highest number of incidents. Coincidentally, it also seems to be the highest number of types of incidents.**
 ```{r}
 sharks_without_not_counted %>% 
-  group_by(county) %>% 
+  group_by(county, injury) %>% 
   summarize(
     number_incidents = n(),
-    types_of_incidents = n_distinct(injury)
   ) %>% 
   arrange(-number_incidents)
 ```
