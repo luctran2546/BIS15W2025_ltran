@@ -39,28 +39,163 @@ library("gapminder")
 ```
 
 1. Use the function(s) of your choice to get an idea of the overall structure of the data frame, including its dimensions, column names, variable classes, etc. As part of this, determine how NA's are treated in the data.   
+
+*There are 6 columns and 1,704 rows. There are continuous variables, factors, and integers (year). Year may have to be reclassified as a factor so that the bar plots look good. Off cursory glance, there doesn't seem to be any obvious means of categorizing NAs.*
 ```{r}
 gapminder <- gapminder
+glimpse(gapminder)
+summary(gapminder)
 ```
 
 2. How many countries are represented in this dataset? Make a table and a plot that shows the number of countries by continent.  
 
+*There are 142 total countries.There are 52 countries in Africa, 25 in the Americas, 33 in Asia, 30 in Europe, and 2 in Oceania.*
+```{r}
+gapminder %>% 
+  summarize(n_countries = n_distinct(country))
+
+gapminder %>% 
+  group_by(continent) %>% 
+  summarize(n_countries = n_distinct(country))
+
+gapminder %>% 
+  ggplot(aes(x=continent))+
+  geom_bar()+
+  labs(title = "Number of Countries by Continent",
+       x = "Continent",
+       y = "Number of Countries")+
+  theme(plot.title = element_text(size = rel(2), hjust = 0.5))
+  
+```
+
 3. Which country has the largest population growth since 1952? Show this as a table.  
+```{r}
+gapminder %>% 
+  group_by(country) %>% 
+  summarize(
+    pop_growth = max(pop)-min(pop),
+    log10_pop_growth = log(pop_growth), #for analysis
+    .groups='keep'
+  ) %>% 
+  arrange(-pop_growth)
+```
 
 
 4. Make a plot that shows population growth for the country you found in question #3. This plot should show the change over time.  
+```{r}
+gapminder %>% 
+  filter(country == "China") %>% 
+  ggplot(aes(x=year, y = pop))+
+  geom_point()+
+  geom_line()+
+  labs(
+    title = "Population of China Since 1952 on a log scale",
+    x = "Year",
+    y = "Population"
+  )+
+  scale_y_log10()+ #scaling population to log10
+  theme(plot.title = element_text(hjust = 0.5))
+```
 
 5. How has global life expectancy changed between 1952 and 2007? Show the min, mean, and max for all countries in the dataset. Show this as a table.  
+```{r}
+# Min, Mean, Max for each country
+gapminder %>% 
+  group_by(country) %>% 
+  summarize(
+    min_expectancy = min(lifeExp),
+    mean_expectancy = mean(lifeExp),
+    max_expectancy = max(lifeExp)
+  )
+```
 
 6. Make a plot that shows how mean life expectancy has changed over time for each continent. What is your interpretation of what happened in Africa between 1987 and 2002?  
 
+*It looks like something happened during that time. From quick googling, it seems that it might be from floods at the time and relatively inaccessible medical services. There's also a chance it's because of AIDS.*
+```{r}
+gapminder %>% 
+  group_by(continent, year) %>% 
+  mutate(mean_life_exp = mean(lifeExp)) %>% 
+  ggplot(aes(x = year, y = mean_life_exp, color = continent))+
+  geom_point()+
+  geom_line()+
+  labs(title = "Mean Life Expectancy Over Time by Continent",
+       x = "Year",
+       y = "Average Life Expectancy")+
+  theme(plot.title = element_text(hjust=0.5))
+```
+
 7. We are interested in the relationship between per capita GDP and life expectancy; i.e. does having more money help you live longer? Show this as a plot.  
+
+*It looks like it helps to a degree, because there's a general upward trend. It's very noisy, however.*
+```{r}
+gapminder %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp))+
+  geom_point()+
+  geom_line()+
+  scale_x_log10()+
+  labs(title = "Life expectancy vs GDP Per Capita with GDP on a log scale",
+       x = "GDP Per Capita",
+       y = "Life Expectancy")+
+  theme(plot.title = element_text(hjust=0.5))
+```
 
 8. Which five countries have had the highest GDP per capita growth over the years represented in this dataset? Show this as a table.  
 
+*Because it's a bit vague on what "highest GDP per capita growth over the years represented", I'm interpreting this question as "the biggest change if you take the first and last values and take the difference."*
+
+*Using this definition, the countries are Singapore, Norway, Hong Kong (China), Ireland, and Austria.*
+```{r}
+gapminder %>% 
+  group_by(country) %>% 
+  summarize(
+    first_gdp = first(gdpPercap, order_by = year),
+    last_gdp = last(gdpPercap, order_by = year),
+    gdp_diff = last_gdp - first_gdp
+  ) %>% 
+  top_n(5) %>% 
+  arrange(-gdp_diff)
+```
+
 9. How does per capita GDP growth compare between these same five countries? Show this as a plot.  
+```{r}
+gapminder %>% 
+  filter(country %in% c("Singapore", "Norway", "Hong Kong, China", "Ireland", "Austria")) %>% 
+  ggplot(aes(x = year, y = gdpPercap, color = country))+
+  geom_point()+
+  geom_line()+
+  labs(
+    title = "GDP Per Capita vs Year by Country",
+    x = "Year",
+    y = "GDP Per Capita"
+  )+
+  theme(plot.title = element_text(hjust= 0.5))
+```
 
 10. Do one analysis of your choice that includes a table and plot as outputs.  
+
+**How does the median life expectancy change over time? Do it for the entire planet at once. (I didn't really have much to work with. There's only six variables.)**
+
+*It seems to increase as a whole over time.*
+```{r}
+gapminder %>% 
+  group_by(year) %>% 
+  summarize(median_life_expectancy = median(lifeExp)) %>% 
+  arrange(year)
+
+gapminder %>% 
+  group_by(year) %>% 
+  summarize(median_life_expectancy = median(lifeExp)) %>%
+  ggplot(aes(x = year, y = median_life_expectancy))+
+  geom_point()+
+  geom_line()+
+  labs(
+    title = "Median Life Expectancy over Time",
+    x = "Year",
+    y = "Median Life Expectancy"
+  )+
+  theme(plot.title = element_text(hjust=0.5))
+```
 
 ## Knit and Upload
 Please knit your work as a .pdf or .html file and upload to Canvas. Homework is due before the start of the next lab. No late work is accepted. Make sure to use the formatting conventions of RMarkdown to make your report neat and clean! 
