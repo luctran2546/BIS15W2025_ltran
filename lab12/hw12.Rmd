@@ -174,10 +174,41 @@ gapminder %>%
 
 10. Do one analysis of your choice that includes a table and plot as outputs.  
 
-**Convert** `lifeExp` **into categorical variables, and make a table of 
+**Convert** `gdpPercap` **into categorical variables, and make a table of each year and how many countries fall into each category. Then, graph number of countries (y-axis) vs year (x-axis) grouped by each gdp category. What trends do you notice?**
+
+*I notice that there seems to be a general uptick in countries with higher GDPs. Obviously, there will be some that aren't in the highest quartiles, but in the overall data, it seems like it's approaching roughly 42% of countries doing in the top 25% of all data (~60/142 countries, "high" gdp being the third quartile or higher).*
 
 ```{r}
+library(gtools)
+quartiles <- quantcut(gapminder$gdpPercap)
+table(quartiles)
 
+gapminder <- gapminder %>% 
+  mutate(gdp_category = case_when(gdpPercap < 1.2e+03 ~ "low",
+                                  gdpPercap > 1.2e+03 & gdpPercap <= 3.53e+03 ~ "medium-low",
+                                  gdpPercap > 3.53e+03 & gdpPercap <= 9.33e+03 ~ "medium-high",
+                                  gdpPercap > 9.33e+03 ~ "high"))
+
+gapminder %>% 
+  group_by(gdp_category, year) %>% 
+  summarize(
+    n_countries = n_distinct(country),
+    .groups='keep'
+  ) %>% 
+  pivot_wider(
+    names_from = gdp_category,
+    values_from = n_countries
+  )
+
+gapminder %>% 
+  group_by(year, gdp_category) %>% 
+  summarize(n=n(), .groups='keep') %>% 
+  ggplot(aes(x=year, y = n, group = gdp_category, color = gdp_category))+
+  geom_point()+
+  geom_line()+
+  labs(title = "How many countries are in each GDP category by year",
+       x = "Year",
+       y = "Number of Countries")
 ```
 
 ## Knit and Upload
