@@ -174,27 +174,10 @@ gapminder %>%
 
 10. Do one analysis of your choice that includes a table and plot as outputs.  
 
-**How does the median life expectancy change over time? Do it for the entire planet at once. (I didn't really have much to work with. There's only six variables.)**
+**Convert** `lifeExp` **into categorical variables, and make a table of 
 
-*It seems to increase as a whole over time.*
 ```{r}
-gapminder %>% 
-  group_by(year) %>% 
-  summarize(median_life_expectancy = median(lifeExp)) %>% 
-  arrange(year)
 
-gapminder %>% 
-  group_by(year) %>% 
-  summarize(median_life_expectancy = median(lifeExp)) %>%
-  ggplot(aes(x = year, y = median_life_expectancy))+
-  geom_point()+
-  geom_line()+
-  labs(
-    title = "Median Life Expectancy over Time",
-    x = "Year",
-    y = "Median Life Expectancy"
-  )+
-  theme(plot.title = element_text(hjust=0.5))
 ```
 
 ## Knit and Upload
