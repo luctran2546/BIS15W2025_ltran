@@ -1,6 +1,6 @@
 ---
 title: "Lab 13 Homework"
-author: "Please Add Your Name Here"
+author: "Luc-Tanton Tran"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -46,7 +46,7 @@ bbox_bear <- make_bbox(bear_long, bear_lat)
 
 3. Load a map from `stadiamaps` in a `stamen_terrain` projection and display the map. Hint: use zoom=5.  
 ```{r}
-bear_map <- get_stadiamap(bbox_bear, zoom = 5)
+bear_map <- get_stadiamap(bbox_bear,maptype = "stamen_terrain", zoom = 5)
 ```
 
 ```{r}
@@ -59,7 +59,9 @@ ggmap(bear_map)
 
 4. Build a final map that overlays the recorded observations of grizzly bears in Alaska.  
 ```{r}
-
+ggmap(bear_map)+
+  geom_point(data= grizzly, aes(longitude, latitude), size = 0.5)+
+  labs(x= "Longitude", y= "Latitude", title="Grizzly Bear Observations")
 ```
 
 ## Push your final code to GitHub!
