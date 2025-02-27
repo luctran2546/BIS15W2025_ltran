@@ -227,7 +227,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  
+  session$onSessionEnded(stopApp)
   output$plot <- renderPlot({
     ggplot(data=homerange,aes_string(x = "locomotion", fill = input$fill))+
              geom_bar(pos = 'dodge', color = "black")
