@@ -70,13 +70,60 @@ There are many ways to adjust shiny apps for better visual appeal. Let's start w
 
 Let's build an app using the `homerange` data that will produce a density plot of `log10.hra` with reactivity assigned to `taxon`.
 ```{r, eval=F, echo=T}
+library(shiny)
 
+ui <- fluidPage(titlePanel("Log 10 Homerange by Taxon"),
+                selectInput("x",
+                            "Select Taxon",
+                            choices = unique(homerange$taxon),
+                            selected = "birds"),
+                plotOutput("plot", width = "500px", height = "400px")
+  
+)
+
+server <- function(input, output, session) {
+  
+  output$plot <- renderPlot({
+    
+    homerange %>% 
+      filter(taxon==input$x) %>% 
+      ggplot(aes(x=log10.hra))+
+      geom_density(fill="steelblue", alpha = 0.5, color = "black")
+  })
+}
+
+shinyApp(ui, server)
 ```
+
 
 ## Adding Numeric Input
 Let's try adding a new numeric input so the user can change the size of the points on the plot with a slider. We can do this with the `sliderInput()` function. The `sliderInput()` function takes a label that the server function will use to access the value, the label that the ui will display to the user, a minimum and maximum value, a starting value, and a step size. Edit the script to include the slider input in the ui and for the server to access the input value.
 ```{r, eval=F, echo=T}
+library(shiny)
 
+ui <- fluidPage(
+  selectInput("x",
+              "Select X Variable",
+              choices=c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"),
+              selected = "bill_length_mm"),
+  selectInput("y",
+              "Select Y Input",
+              choices=c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"),
+              selected = "bill_length_mm"),
+  sliderInput("pointsize", "Select the Pointsize", min = 0.5, max = 3, value = 1, step = 0.5),
+  plotOutput("plot")
+)
+
+server <- function(input, output, session) {
+  session$onSessionEnded(stopApp) #auto stopp of app when closed
+  output$plot <- renderPlot({
+    penguins %>% 
+      ggplot(aes_string(x = input$x, y = input$y, color = "species"))+
+      geom_point(na.rm=T, size = input$pointsize)
+  })
+}
+
+shinyApp(ui, server)
 ```
 
 ## ui Layout with `shinydashboard`  
@@ -94,6 +141,8 @@ server <- function(input, output) { }
 
 shinyApp(ui, server)
 ```
+
+***STOP***
 
 Let's add our ui and server elements to make a functional dashboard. We will put our ui elements in the `dashboardBody()`. Edit your app script to use the dashboard format. We won't do anything with the sidebar in this tutorial, but see the [R Studio tutorial](https://rstudio.github.io/shinydashboard/get_started.html) for more information.  
 
