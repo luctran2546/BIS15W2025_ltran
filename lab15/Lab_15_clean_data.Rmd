@@ -111,7 +111,7 @@ write.csv(tax_tab, file = "Tax_Table_KOSTIC_INFANTS_DIABETES.csv", row.names = T
 ```
 
 ```{r}
-# write.csv(infant_t1d, file = "Sample_Data_KOSTIC_INFANTS_DIABETES.csv", row.names = F)
+write.csv(infant_t1d, file = "Sample_Data_KOSTIC_INFANTS_DIABETES.csv", row.names = F)
 
 ```
 
