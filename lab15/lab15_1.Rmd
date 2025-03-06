@@ -21,7 +21,7 @@ output:
 ## Install Phyloseq
 *Be sure to recomment out after installing*
 ```{r}
-#install.packages(phyloseq)
+#install.packages("phyloseq")
 ```
 
 ## Load Libraries
